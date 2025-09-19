@@ -1,7 +1,7 @@
 "use client"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
-import { ArrowLeftCircle, LoaderIcon } from "lucide-react"
+import { ArrowLeftCircle, ArrowRightCircle, LoaderIcon } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { signUp } from "@/lib/actions"
+import Link from "next/link"
 
 export function SignUpForm({
     className,
@@ -101,10 +102,18 @@ export function SignUpForm({
                   Or continue with
                 </span>
               </div> */}
-                            <div className="text-center text-sm flex justify-start gap-3 items-center cursor-pointer">
-                                <ArrowLeftCircle /> Back
-                            </div>
+                            
                         </div>
+                        <footer className="flex justify-between mt-4">
+                            {/* Back button */}
+                            <Link
+                                href="/sign-in"
+                                className="text-sm flex items-center gap-2 hover:underline"
+                            >
+                                <ArrowLeftCircle className="w-4 h-4" />
+                                Back to Login
+                            </Link>
+                        </footer>
                     </form>
                 </CardContent>
             </Card>

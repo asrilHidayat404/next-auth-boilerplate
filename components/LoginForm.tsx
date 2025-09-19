@@ -1,7 +1,7 @@
 "use client"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
-import { ArrowLeftCircle, LoaderIcon } from "lucide-react"
+import { ArrowLeftCircle, ArrowRightCircle, LoaderIcon } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -17,7 +17,7 @@ export function LoginForm({
     ...props
 }: React.ComponentProps<"div">) {
     const router = useRouter()
-      const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
@@ -88,24 +88,37 @@ export function LoginForm({
                                     Show Password
                                 </Label>
                             </div>
-                              <Button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 cursor-pointer">
-                {loading && <LoaderIcon className="animate-spin h-5 w-5" />}
-                <span>{loading ? "Authenticating..." : "Login"}</span>
-              </Button>
+                            <Button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 cursor-pointer">
+                                {loading && <LoaderIcon className="animate-spin h-5 w-5" />}
+                                <span>{loading ? "Authenticating..." : "Login"}</span>
+                            </Button>
 
                             {/* <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
                   Or continue with
                 </span>
               </div> */}
-                            <div className="text-center text-sm flex justify-start gap-3 items-center cursor-pointer">
-                                <ArrowLeftCircle /> Back
-                            </div>
-                            <div className="text-center text-sm flex justify-start gap-3 items-center cursor-pointer">
-                                <ArrowLeftCircle /> 
-                                <Link href={"/sign-up"}>Register</Link>
-                            </div>
+
                         </div>
+                        <footer className="flex justify-between mt-4">
+                            {/* Back button */}
+                            <Link
+                                href="/"
+                                className="text-sm flex items-center gap-2 hover:underline"
+                            >
+                                <ArrowLeftCircle className="w-4 h-4" />
+                                Back
+                            </Link>
+
+                            {/* Register button */}
+                            <Link
+                                href="/sign-up"
+                                className="text-sm flex items-center gap-2 hover:underline"
+                            >
+                                Register
+                                <ArrowRightCircle className="w-4 h-4" />
+                            </Link>
+                        </footer>
                     </form>
                     <div className="relative hidden md:block">
                         <Image
