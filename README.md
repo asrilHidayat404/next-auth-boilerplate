@@ -1,5 +1,3 @@
-![Preview](https://raw.githubusercontent.com/asrilHidayat404/next-auth-boilerplate/main/public/default/defaultAvatar.png)
-
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
