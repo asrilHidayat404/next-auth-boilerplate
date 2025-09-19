@@ -1,8 +1,16 @@
+import Toast from "@/components/Toast";
+import { auth } from "@/lib/auth";
 import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+
+export default async function Home() {
+  const session = await auth()
+  
+
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
+      <Link href={session?.user ? "/dashboard" : "/sign-in"}>{session?.user ? "Dashboard" : "Sign In"}</Link>
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <Image
           className="dark:invert"
@@ -21,7 +29,8 @@ export default function Home() {
             .
           </li>
           <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
+            <Toast />
+            Save and see your changes instantly. 
           </li>
         </ol>
 
