@@ -1,3 +1,32 @@
+A boilerplate for Next.js with authentication and role-based access.
+
+## Features
+
+- 🔐 Authentication with NextAuth
+- 👥 Role-based access control (Admin, User)
+- 🎨 Styled with Tailwind CSS + shadcn/ui
+- 📦 Prisma ORM + Mysql (default)
+- ⚡ Server Actions for secure server-side logic
+
+
+Preview:
+
+1. Login Page
+
+![Preview](https://raw.githubusercontent.com/asrilHidayat404/next-auth-boilerplate/main/public/preview/login.png)
+
+2. Dashboard Page
+
+![Preview](https://raw.githubusercontent.com/asrilHidayat404/next-auth-boilerplate/main/public/preview/dashboard.png)
+
+3. Dashboard Profile Page
+
+![Preview](https://raw.githubusercontent.com/asrilHidayat404/next-auth-boilerplate/main/public/preview/profile.png)
+
+4. Auth Code Sample
+
+![Preview](https://raw.githubusercontent.com/asrilHidayat404/next-auth-boilerplate/main/public/preview/code.png)
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
