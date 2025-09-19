@@ -16,7 +16,7 @@ model Role {
 
 model User {
   id            String          @id @default(cuid())
-  name          String?
+  full_name     String?
   email         String?         @unique
   password      String?
   emailVerified DateTime?
@@ -37,10 +37,9 @@ model Post {
   content String
   image   String
 
-  userId  String
+  userId String
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
 }
 
 model Account {

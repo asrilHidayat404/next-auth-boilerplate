@@ -1,6 +1,6 @@
 import { DeletePostButton } from "@/components/PostForm";
 import { auth } from "@/lib/auth";
-import db from "@/lib/db/db";
+import db from "@/lib/db";
 import type { Post } from "@prisma/client";
 import Image from "next/image";
 
@@ -17,7 +17,7 @@ export default async function Post() {
                 include: {
                     user: {
                         select: {
-                            name: true,
+                            full_name: true,
                             email: true
                         }
                     }
@@ -33,7 +33,7 @@ export default async function Post() {
                 include: {
                     user: {
                         select: {
-                            name: true,
+                            full_name: true,
                             email: true
                         }
                     }
@@ -70,7 +70,7 @@ export default async function Post() {
                                 )}
 
                                 <p className="text-xs text-gray-500 mt-2">
-                                    By: {post.user?.name || post.user?.email}
+                                    By: {post.user?.full_name || post.user?.email}
                                 </p>
                             </div>
 

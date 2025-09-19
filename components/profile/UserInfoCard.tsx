@@ -26,7 +26,7 @@ export default function UserInfoCard() {
   const { data: session, update } = useSession()
 
   const [formValues, setFormValues] = useState({
-    name: session?.user?.name || "",
+    fullName: session?.user?.fullName || "",
     email: session?.user?.email || "",
   });
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ export default function UserInfoCard() {
   useEffect(() => {
     // update state saat session berubah
     setFormValues({
-      name: session?.user?.name || "",
+      fullName: session?.user?.fullName || "",
       email: session?.user?.email || "",
     });
   }, [session]);
@@ -47,7 +47,7 @@ export default function UserInfoCard() {
     e.preventDefault();
     const formData = new FormData();
     setLoading(true)
-    formData.append("name", formValues.name);
+    formData.append("fullName", formValues.fullName);
     formData.append("email", formValues.email);
 
     const res = await UpdateProfile(formData);
@@ -87,7 +87,7 @@ export default function UserInfoCard() {
                 <Skeleton className="h-6 w-full" />
               ) : (
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  {session?.user?.name}
+                  {session?.user?.fullName}
                 </p>
               )}
             </div>
@@ -136,12 +136,12 @@ export default function UserInfoCard() {
             <form onSubmit={handleSubmit}>
               <div className={`grid grid-cols-1 gap-4`}>
                 <div className="grid gap-3">
-                  <Label htmlFor="fullname">Full Name</Label>
+                  <Label htmlFor="fullName">Full Name</Label>
                   <Input
-                    id="fullname"
+                    id="fullName"
                     type="text"
-                    name="name"
-                    value={formValues.name}
+                    name="fullName"
+                    value={formValues.fullName}
                     onChange={handleChange}
                   />
 

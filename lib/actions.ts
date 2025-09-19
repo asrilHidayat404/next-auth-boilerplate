@@ -1,23 +1,34 @@
 "use server"
 import { schema } from "@/lib/schema";
-import db from "@/lib/db/db";
 import { executeAction } from "@/lib/executeAction";
 import bcrypt from "bcryptjs";
+import path from "path";
+import { promises as fs } from "fs";
+import db from "./db";
+import { signUpSchema } from "./SignUpSchema";
+
 
 const signUp = async (formData: FormData) => {
   return executeAction({
     actionFn: async () => {
+      const fullName = formData.get("fullName");
       const email = formData.get("email");
       const password = formData.get("password");
+      const passwordConfirmation = formData.get("passwordConfirmation");
 
 
-      const validatedData = schema.parse({ email, password });
-      // copy default avatar untuk user ini
-
+      const validatedData = signUpSchema.safeParse({ fullName, email, password, passwordConfirmation });
+      if (!validatedData.success) {
+        console.log(validatedData);
+        
+        // Lempar error agar frontend bisa tangkap pesan asli
+        throw new Error(validatedData.error.errors.map(e => e.message).join(", "));
+      }
       const user = await db.user.create({
         data: {
-          email: validatedData.email.toLocaleLowerCase(),
-          password: await bcrypt.hash(validatedData.password, 10),
+          full_name: validatedData.data.fullName,
+          email: validatedData.data.email.toLocaleLowerCase(),
+          password: await bcrypt.hash(validatedData.data.password, 10),
           role: "user",
           avatar: 'avatar/defaultAvatar.png'
         },
@@ -36,8 +47,7 @@ const signUp = async (formData: FormData) => {
 };
 
 
-import path from "path";
-import { promises as fs } from "fs";
+
 
 export async function copyDefaultAvatar(targetDir: string, userId: string) {
   const defaultPath = path.join(process.cwd(), "public/default/defaultAvatar.png"); // sumber

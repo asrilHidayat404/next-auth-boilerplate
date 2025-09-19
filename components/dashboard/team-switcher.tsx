@@ -7,6 +7,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import Link from "next/link"
 
 export function TeamSwitcher() {
 
@@ -17,9 +18,9 @@ export function TeamSwitcher() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <AlignJustify className="size-4" />
-              </div>
+              <Link href={"/"} className="bg-accent-foreground flex aspect-square size-10 items-center justify-center rounded-lg p-1">
+                <img src="/next.svg" alt="" />
+              </Link>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">NEXT JS</span>
                 <span className="truncate text-xs">NECK SICK</span>

@@ -1,7 +1,7 @@
 "use client"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
-import { ArrowLeftCircle, ArrowRightCircle, LoaderIcon } from "lucide-react"
+import { ArrowLeftCircle, LoaderIcon } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button"
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { signUp } from "@/lib/actions"
 import Link from "next/link"
+import { signUp } from "@/action/AuthenticationAction"
 
 export function SignUpForm({
     className,
@@ -19,20 +19,21 @@ export function SignUpForm({
     const router = useRouter()
     const [loading, setLoading] = useState(false);
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const formData = new FormData(e.currentTarget)
-        setLoading(true)
-        const res = await signUp(formData);
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        setLoading(true);
 
-        if (res?.success) {
-            setLoading(false)
-            toast.success("Account Created")
+        try {
+            await signUp(formData); // jika sukses, langsung lanjut
+            toast.success("Account Created");
             router.push("/sign-in");
-        } else {
-            toast.error("Failed to Create Account")
-            setLoading(false)
+        } catch (error: any) {
+            // menampilkan error validasi atau server
+            toast.error(error?.message || "Failed to Create Account");
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     const [showPassword, setShowPassword] = useState(false)
 
@@ -43,7 +44,7 @@ export function SignUpForm({
 
                     <div className="relative hidden md:block">
                         <Image
-                            src="/illustrations/login-bg.png"
+                            src="/illustrations/sign-up-bg.png"
                             alt="Login Background"
                             fill
                             className="object-contain dark:brightness-[0.7] dark:grayscale"
@@ -58,11 +59,22 @@ export function SignUpForm({
                                 </p>
                             </div>
                             <div className="grid gap-3">
+                                <Label htmlFor="fullName">Full Name</Label>
+                                <Input
+                                    id="fullName"
+                                    type="text"
+                                    placeholder="enter your full name"
+
+                                    name="fullName"
+                                    required
+                                />
+                            </div>
+                            <div className="grid gap-3">
                                 <Label htmlFor="email">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="m@example.com"
+                                    placeholder="enter your email"
 
                                     name="email"
                                     required
@@ -77,6 +89,17 @@ export function SignUpForm({
                                     required
                                     type={showPassword ? "text" : "password"}
                                     name="password"
+                                />
+                            </div>
+                            <div className="grid gap-3">
+                                <div className="flex items-center">
+                                    <Label htmlFor="password">Confirm Password</Label>
+                                </div>
+                                <Input
+                                    id="passwordConfirmation"
+                                    required
+                                    type={showPassword ? "text" : "password"}
+                                    name="passwordConfirmation"
                                 />
                             </div>
                             <div className="flex items-center gap-2">
@@ -102,7 +125,7 @@ export function SignUpForm({
                   Or continue with
                 </span>
               </div> */}
-                            
+
                         </div>
                         <footer className="flex justify-between mt-4">
                             {/* Back button */}

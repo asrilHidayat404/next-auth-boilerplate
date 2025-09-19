@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import db from "@/lib/db/db";
+import db from "@/lib/db";
 import { StorageDisk } from "@/lib/StorageDisk";
 import { auth } from "@/lib/auth";
 import { promises as fs } from "fs";
@@ -30,12 +30,6 @@ export async function createPostAction(formData: FormData) {
     // Auth
     const authUser = await auth();
     if (!authUser?.userId) throw new Error("Unauthorized");
-    
-    // Ambil id user dari DB
-    // const userFromDb = await db.user.findUnique({
-    //     where: { id: authUser.userid },
-    // });
-    // if (!userFromDb) throw new Error("Unauthorized");
 
     try {
         let imagePath = "";

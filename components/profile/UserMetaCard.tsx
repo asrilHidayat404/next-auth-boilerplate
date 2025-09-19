@@ -15,7 +15,6 @@ function UserMetaCard() {
 
 
   const { data: session, update } = useSession()
-  console.log(session);
   
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -102,7 +101,7 @@ function UserMetaCard() {
              <Skeleton className="h-4 w-40 rounded-md" />
             ) :(
             <h4 className="mb-2 text-center text-lg font-semibold text-gray-800 xl:text-left dark:text-white/90">
-              {session?.user.name}
+              {session?.user.fullName}
             </h4>
             )}
             <div className="flex flex-col items-center gap-2 text-center xl:flex-row xl:gap-4 xl:text-left">

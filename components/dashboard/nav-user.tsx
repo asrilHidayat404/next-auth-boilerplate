@@ -81,7 +81,7 @@ export function NavUser() {
                   </div>
                 ) : (
                   <>
-                    <span className="truncate font-medium">{session?.user.name ?? "Username"}</span>
+                    <span className="truncate font-medium">{session?.user.fullName ?? "Username"}</span>
                     <span className="truncate text-xs">{session?.user.email ?? "-"}</span>
                   </>
                 )}
@@ -112,7 +112,7 @@ export function NavUser() {
                     </div>
                   ) : (
                     <>
-                      <span className="truncate font-medium">{session?.user.name ?? "Username"}</span>
+                      <span className="truncate font-medium">{session?.user.fullName ?? "Username"}</span>
                       <span className="truncate text-xs">{session?.user.email ?? ""}</span>
                     </>
                   )}
