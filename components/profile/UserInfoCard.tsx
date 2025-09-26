@@ -16,53 +16,54 @@ import { Input } from "../ui/input";
 import { Skeleton } from "../ui/skeleton";
 import { useSession } from "next-auth/react";
 import toast, { LoaderIcon } from "react-hot-toast";
-import {UpdateProfile } from "@/action/AuthenticatedUserAction";
+import { UpdateProfile } from "@/action/AuthenticatedUserAction";
 import { Pen } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { UpdateInfoFormValues, updateInfoSchema } from "@/schemas/UpdateUserProfileSchema";
+
 
 export default function UserInfoCard() {
-
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { data: session, update } = useSession();
 
-  const { data: session, update } = useSession()
-
-  const [formValues, setFormValues] = useState({
-    fullName: session?.user?.fullName || "",
-    email: session?.user?.email || "",
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<UpdateInfoFormValues>({
+    resolver: zodResolver(updateInfoSchema),
+    defaultValues: {
+      full_name: session?.user?.fullName || "",
+      email: session?.user?.email || "",
+    },
   });
-  const [loading, setLoading] = useState(false);
 
+  // sync form ketika session berubah
   useEffect(() => {
-    // update state saat session berubah
-    setFormValues({
-      fullName: session?.user?.fullName || "",
+    reset({
+      full_name: session?.user?.fullName || "",
       email: session?.user?.email || "",
     });
-  }, [session]);
+  }, [session, reset]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormValues(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const onSubmit = async (data: UpdateInfoFormValues) => {
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
     const formData = new FormData();
-    setLoading(true)
-    formData.append("fullName", formValues.fullName);
-    formData.append("email", formValues.email);
+    formData.append("full_name", data.full_name);
+    formData.append("email", data.email);
 
     const res = await UpdateProfile(formData);
 
     if (res?.success) {
-      
       await update(); // refresh session
       toast.success("Profile Updated");
       setDialogOpen(false);
-      setLoading(false)
     } else {
-      setLoading(false)
-
       toast.error(res?.error ?? "Failed to Update Profile!");
     }
+
   };
 
   return (
@@ -74,10 +75,9 @@ export default function UserInfoCard() {
           </h4>
 
           <div
-            className={`grid ${session?.user.role !== "Mahasiswa"
-              ? "grid-cols-1"
-              : "grid-cols-2"
-              } place-content-between pt-3 gap-4 lg:gap-7 2xl:gap-x-32`}
+            className={`grid ${
+              session?.user.role !== "Mahasiswa" ? "grid-cols-1" : "grid-cols-2"
+            } place-content-between pt-3 gap-4 lg:gap-7 2xl:gap-x-32`}
           >
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
@@ -133,38 +133,38 @@ export default function UserInfoCard() {
                 done.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit}>
-              <div className={`grid grid-cols-1 gap-4`}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="grid grid-cols-1 gap-4">
                 <div className="grid gap-3">
-                  <Label htmlFor="fullName">Full Name</Label>
+                  <Label htmlFor="full_name">Full Name</Label>
                   <Input
-                    id="fullName"
+                    id="full_name"
                     type="text"
-                    name="fullName"
-                    value={formValues.fullName}
-                    onChange={handleChange}
+                    {...register("full_name")}
                   />
-
-
+                  {errors.full_name && (
+                    <p className="text-[9px] text-sm text-red-500">
+                      {errors.full_name.message}
+                    </p>
+                  )}
                 </div>
                 <div className="grid gap-3">
                   <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="text"
-                    name="email"
-                    value={formValues.email}
-                    onChange={handleChange}
-                  />
+                  <Input id="email" type="email" {...register("email")} />
+                  {errors.email && (
+                    <p className="text-[9px] text-sm text-red-500">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
               </div>
               <DialogFooter className="mt-3">
                 <DialogClose asChild>
                   <Button variant="destructive">Cancel</Button>
                 </DialogClose>
-                <Button type="submit" disabled={loading}>
-                  {loading && <LoaderIcon className="animate-spin h-5 w-5" />}
-                  <span>{loading ? "Updating..." : "Update"}</span>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && <LoaderIcon className="animate-spin h-5 w-5" />}
+                  <span>{isSubmitting ? "Updating..." : "Update"}</span>
                 </Button>
               </DialogFooter>
             </form>

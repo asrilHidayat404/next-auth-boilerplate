@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const roles = ["USER", "ADMIN"];
+  const roles = ["admin", "user"];
 
   for (const role of roles) {
     await prisma.role.upsert({

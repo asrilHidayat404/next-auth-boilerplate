@@ -17,7 +17,6 @@ export async function middleware(request: NextRequest) {
     const allowedRoles = accessRules[pathname]
 
     if (allowedRoles && !allowedRoles.includes(session.user.role)) {
-      console.log(`⛔ Access denied to ${pathname} for role ${session.user.role}`)
       return NextResponse.redirect(new URL("/403", request.url)) // bikin page 403
     }
   }

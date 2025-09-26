@@ -2,7 +2,7 @@
 import bcrypt from "bcryptjs";
 import path from "path";
 import { promises as fs } from "fs";
-import { signUpSchema } from "@/lib/SignUpSchema";
+import { signUpSchema } from "@/schemas/SignUpSchema";
 import db from "@/lib/db";
 
 
@@ -14,6 +14,8 @@ const signUp = async (formData: FormData) => {
 
 
     const validatedData = signUpSchema.safeParse({ fullName, email, password, passwordConfirmation });
+      // 🚨 HAPUS return error dari sini
+  // karena client sudah handle dengan react-hook-form
     if (!validatedData.success) {
         // Lempar error agar frontend bisa tangkap pesan asli
         throw new Error(validatedData.error.errors.map(e => e.message).join(", "));
@@ -25,7 +27,7 @@ const signUp = async (formData: FormData) => {
                     full_name: validatedData.data.fullName,
                     email: validatedData.data.email.toLowerCase(),
                     password: await bcrypt.hash(validatedData.data.password, 10),
-                    role: "user",
+                    role_id: 2,
                     avatar: 'avatar/defaultAvatar.png',
                 },
             });

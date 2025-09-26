@@ -23,9 +23,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const user = await db.user.findUnique({
           where: { email: validatedCredentials.email },
+          include: {
+            role: true
+          }
         });
 
-        console.log(user);
         if (!user) {
           throw new Error("Invalid credentials.");
         }
@@ -51,11 +53,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ session, user }) {
-
-      const newSession = {
-        ...session,
-        user: { fullName: user.full_name, email: user.email, role: user.role, avatar: user.avatar, },
-      };
+              const role = await db.role.findUnique({
+                where: {
+                  id: user.role_id
+                }
+              })
+              
+              const newSession = {
+                ...session,
+                user: { fullName: user.full_name, email: user.email, role: role?.role_name, avatar: user.avatar, },
+              };
       return newSession;
     },
   },
