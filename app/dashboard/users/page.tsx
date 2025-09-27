@@ -70,7 +70,7 @@ const Page = async () => {
 
 // Basic loading fallback
 const TableLoading = () => (
-  <div className="space-y-2 p-4">
+  <div className="space-y-2 p-4"> 
     <Skeleton className="h-8 w-full" />
     <Skeleton className="h-12 w-full" />
     <Skeleton className="h-12 w-full" />
