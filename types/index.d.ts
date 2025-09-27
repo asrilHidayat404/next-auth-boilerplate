@@ -1,12 +1,11 @@
 export interface Role {
     id: number;
     role_name: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string | number | Date;
+    updatedAt: string | number | Date;
 }
 
 export interface User {
-    createdAt: string | number | Date;
     id: string;
     full_name: string;
     email: string;
@@ -15,6 +14,6 @@ export interface User {
     avatar: string;
     role_id: number;
     role?: Role;
-        createdAt: Date;
-    updatedAt: Date;
+    createdAt: string | number | Date;
+    updatedAt: string | number | Date;
 }

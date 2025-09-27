@@ -8,13 +8,13 @@ import { SessionProvider } from "next-auth/react";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-   display: "swap",
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-   display: "swap",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -33,12 +33,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProvider>
-
-      <ThemeProvider>
-
-        <Toaster position="top-right"/>
-        {children}
-      </ThemeProvider>
+          <ThemeProvider>
+            <Toaster position="top-right" />
+            {children}
+          </ThemeProvider>
         </SessionProvider>
       </body>
     </html>

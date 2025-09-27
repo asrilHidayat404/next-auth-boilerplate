@@ -185,4 +185,4 @@ export function EditForm({
   );
 }
 
-export default EditForm;
+export default React.memo(EditForm);

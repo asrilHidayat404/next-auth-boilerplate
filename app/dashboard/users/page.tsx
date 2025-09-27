@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,19 +6,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CreateUserForm } from "@/components/User/CreateUserForm";
 import DataTable from "@/components/User/DataTable";
+import ExportUserButton from "@/components/User/ExportUserButton";
+import { ImportUserButton } from "@/components/User/ImportUserForm";
+import SearchUserForm from "@/components/User/SearchUserForm";
 import db from "@/lib/db";
-import {
-
-  Search,
-  Download,
-  Upload,
-  Plus,
-  Filter,
-  ChevronDown,
-  PlusCircleIcon,
-} from "lucide-react";
+import { Search, Download, Upload, PlusCircleIcon } from "lucide-react";
+import { Suspense } from "react";
 
 const Page = async () => {
   const users = await db.user.findMany({
@@ -31,11 +26,11 @@ const Page = async () => {
         role_name: "asc", // 'admin' akan datang sebelum 'user'
       },
     },
+    // take: 10
   });
 
-
-
-
+  console.log("Page render");
+  
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6">
@@ -49,49 +44,39 @@ const Page = async () => {
         <CardHeader>
           {/* Search and Filter Bar */}
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search users by name or email..."
-                className="pl-10"
-              />
-            </div>
+            <SearchUserForm />
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <Download className="h-4 w-4" />
-                  Export
-                </Button>
+                <ExportUserButton />
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <Upload className="h-4 w-4" />
-                  Import
-                </Button>
+                <ImportUserButton />
 
-                <Button size="sm" className="flex items-center gap-2">
-                  <PlusCircleIcon className="h-4 w-4" />
-                  Create User
-                </Button>
+                <CreateUserForm />
               </div>
             </div>
           </div>
         </CardHeader>
 
         <CardContent className="p-0">
-          <DataTable users={users} />
+          <Suspense fallback={<TableLoading />}>
+            <DataTable users={users} />
+          </Suspense>
         </CardContent>
       </Card>
     </div>
   );
 };
+
+// Basic loading fallback
+const TableLoading = () => (
+  <div className="space-y-2 p-4">
+    <Skeleton className="h-8 w-full" />
+    <Skeleton className="h-12 w-full" />
+    <Skeleton className="h-12 w-full" />
+    <Skeleton className="h-12 w-full" />
+    <Skeleton className="h-12 w-full" />
+  </div>
+);
 
 export default Page;

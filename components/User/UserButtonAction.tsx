@@ -9,10 +9,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, User2Icon } from "lucide-react";
 
-import { User, useUser } from "@/context/UserContext";
 import EditForm from "./EditForm";
 import DeleteUser from "./DeleteUser";
 import DeleteUserForm from "./DeleteUser";
+import { useUser } from "@/context/UserContext";
+import { User } from "@/types";
 
 const UserButtonAction = ({ selectedUser }: { selectedUser: User }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);

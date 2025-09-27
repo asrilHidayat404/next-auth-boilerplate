@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -13,7 +14,19 @@ async function main() {
     });
   }
 
-  console.log("✅ Default roles seeded:", roles.join(", "));
+  const hashedPassword = await bcrypt.hash("123123", 10);
+
+  await prisma.user.create({
+    data: {
+      full_name: "Admin User",
+      email: "admin@gmail.com",
+      password: hashedPassword,
+      role_id: 1,
+      avatar: "", // nanti bisa isi default avatar
+    },
+  });
+
+  console.log("✅ Default roles and user seeded:", roles.join(", "));
 }
 
 main()

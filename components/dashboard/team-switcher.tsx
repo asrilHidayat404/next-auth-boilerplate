@@ -22,8 +22,8 @@ export function TeamSwitcher() {
                 <img src="/next.svg" alt="" />
               </Link>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">NEXT JS</span>
-                <span className="truncate text-xs">NECK SICK</span>
+                <span className="truncate font-medium font-lequire">NEXT JS</span>
+                <span className="truncate text-xs font-lequire">NECK SICK</span>
               </div>
             </SidebarMenuButton>
       </SidebarMenuItem>

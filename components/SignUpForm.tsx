@@ -1,31 +1,30 @@
-"use client"
+"use client";
 
-import { cn } from "@/lib/utils"
-import Image from "next/image"
-import { ArrowLeftCircle, LoaderIcon } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import toast from "react-hot-toast"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { useState } from "react"
-import { signUp } from "@/action/AuthenticationAction"
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { ArrowLeftCircle, LoaderIcon } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useState } from "react";
+import { signUp } from "@/action/AuthenticationAction";
 
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { signUpSchema, SignUpSchemaValues } from "@/schemas/SignUpSchema"
-
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signUpSchema, SignUpSchemaValues } from "@/schemas/SignUpSchema";
 
 export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -34,27 +33,31 @@ export function SignUpForm({
     reset,
   } = useForm<SignUpSchemaValues>({
     resolver: zodResolver(signUpSchema),
-  })
+  });
 
   const onSubmit = async (data: SignUpSchemaValues) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const formData = new FormData()
-      formData.append("fullName", data.fullName)
-      formData.append("email", data.email)
-      formData.append("password", data.password)
-      formData.append("passwordConfirmation", data.passwordConfirmation)
+      const formData = new FormData();
+      formData.append("fullName", data.fullName);
+      formData.append("email", data.email);
+      formData.append("password", data.password);
+      formData.append("passwordConfirmation", data.passwordConfirmation);
 
-      await signUp(formData)
-      toast.success("Account Created")
-      reset()
-      router.push("/sign-in")
+      const res = await signUp(formData);
+      if (res.success) {
+        toast.success("Account Created");
+        router.push("/sign-in");
+        reset();
+      } else {
+        toast.error(`❌ ${res.error}`);
+      }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to Create Account")
+      toast.error(error?.message || "Failed to Create Account");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -87,7 +90,9 @@ export function SignUpForm({
                   {...register("fullName")}
                 />
                 {errors.fullName && (
-                  <p className="text-xs text-red-500">{errors.fullName.message}</p>
+                  <p className="text-xs text-red-500">
+                    {errors.fullName.message}
+                  </p>
                 )}
               </div>
 
@@ -114,7 +119,9 @@ export function SignUpForm({
                   {...register("password")}
                 />
                 {errors.password && (
-                  <p className="text-xs text-red-500">{errors.password.message}</p>
+                  <p className="text-xs text-red-500">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
 
@@ -170,5 +177,5 @@ export function SignUpForm({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

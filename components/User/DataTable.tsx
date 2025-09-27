@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Table,
@@ -20,7 +21,7 @@ import {
   Upload,
 } from "lucide-react";
 
-import { UserProvider } from "@/context/UserContext";
+import { UserProvider, useUser } from "@/context/UserContext";
 import UserButtonAction from "@/components/User/UserButtonAction";
 import { Button } from "../ui/button";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
@@ -36,27 +37,36 @@ const getInitials = (name: string | null) => {
     .slice(0, 2);
 };
 
-const DataTable = ({ users }: {
-    users: User[];
-}) => {
+
+
+const DataTable = React.memo(({ users }: { users: User[] }) => {
   const headers = [
-    { key: "no", label: "No", className: "w-12" },
-    { key: "full_name", label: "Full Name", className: "w-[200px]" },
-    { key: "email", label: "Email", className: "w-[180px]" },
-    { key: "role", label: "Role", className: "w-24" },
-    { key: "verified", label: "Verified", className: "w-20" },
-    { key: "created", label: "Created", className: "w-32" },
-    { key: "actions", label: "", className: "w-16" },
+    { key: "no", label: "No", className: "w-8" },
+    { key: "full_name", label: "Full Name", className: "w-32" },
+    { key: "role", label: "Role", className: "w-20" },
+    { key: "status", label: "Status", className: "w-20" },
+    { key: "gender", label: "Gender", className: "w-20" },
+    { key: "address", label: "Address", className: "w-40" },
+    { key: "verified", label: "Verified", className: "w-16" },
+    { key: "created", label: "Created", className: "w-24" },
+    { key: "actions", label: "", className: "w-12" },
   ];
+
+  const { user } = useUser();
+  const renderUser = user?.length ? user : users;
+
+  console.log("Table rendered");
+  
+
   return (
     <ScrollArea className="w-full">
-      <Table>
+      <Table className="text-xs">
         <TableHeader>
           <TableRow>
             {headers.map((header) => (
               <TableHead
                 key={header.key}
-                className={`text-xs font-medium text-muted-foreground px-4 py-3 ${header.className}`}
+                className={`font-medium text-muted-foreground px-2 py-2 ${header.className}`}
               >
                 {header.label}
               </TableHead>
@@ -64,88 +74,107 @@ const DataTable = ({ users }: {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((user, index) => (
+          {renderUser.map((user, index) => (
             <TableRow key={user.id} className="hover:bg-muted/50">
               {/* No */}
-              <TableCell className="px-4 py-2 text-sm text-muted-foreground">
-                {index + 1}
+              <TableCell className="px-2 py-1 text-muted-foreground text-center">
+                {index + 1}.
               </TableCell>
 
-              {/* User */}
-              <TableCell className="px-4 py-2">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
+              {/* User Info */}
+              <TableCell className="px-2 py-1">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Avatar className="h-6 w-6">
                     <AvatarImage
                       src={user.avatar ? `/storage/${user.avatar}` : ""}
                     />
-                    <AvatarFallback className="text-xs">
+                    <AvatarFallback className="text-[10px]">
                       {getInitials(user.full_name)}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <p className="text-sm font-medium line-clamp-1">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium line-clamp-1 truncate">
                       {user.full_name || "Unnamed User"}
                     </p>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      <Mail className="h-2.5 w-2.5 text-muted-foreground" />
+                      <span className="text-muted-foreground truncate line-clamp-1">
+                        {user.email || "No email"}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </TableCell>
 
-              {/* Email */}
-              <TableCell className="px-4 py-2">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-sm line-clamp-1">{user.email}</span>
-                </div>
-              </TableCell>
-
               {/* Role */}
-              <TableCell className="px-4 py-2">
+              <TableCell className="px-2 py-1">
                 <Badge
                   variant={
                     user.role?.role_name === "admin"
                       ? "destructive"
                       : "secondary"
                   }
-                  className="text-xs"
+                  className="text-[10px] px-1 py-0 h-4"
                 >
                   {user.role?.role_name || "No Role"}
                 </Badge>
               </TableCell>
 
+              {/* Status */}
+              <TableCell className="px-2 py-1">
+                <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
+                  Active
+                </Badge>
+              </TableCell>
+
+              {/* Gender */}
+              <TableCell className="px-2 py-1">
+                <Badge variant="secondary" className="text-[10px] px-1 py-0 h-4">
+                  Laki-laki
+                </Badge>
+              </TableCell>
+
+              {/* Address */}
+              <TableCell className="px-2 py-1">
+                <div className="max-w-[120px]">
+                  <span className="line-clamp-2 leading-tight text-wrap">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. At, ea.
+                  </span>
+                </div>
+              </TableCell>
+
               {/* Verified */}
-              <TableCell className="px-4 py-2">
+              <TableCell className="px-2 py-1">
                 {user.emailVerified ? (
-                  <div className="flex items-center gap-1">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-xs text-muted-foreground">Yes</span>
+                  <div className="flex items-center gap-1 justify-center">
+                    <CheckCircle className="h-3 w-3 text-green-500" />
+                    <span className="text-muted-foreground">Yes</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1">
-                    <XCircle className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">No</span>
+                  <div className="flex items-center gap-1 justify-center">
+                    <XCircle className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-muted-foreground">No</span>
                   </div>
                 )}
               </TableCell>
 
               {/* Created At */}
-              <TableCell className="px-4 py-2">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(user.createdAt).toLocaleDateString("en-US", {
+              <TableCell className="px-2 py-1">
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-2.5 w-2.5 text-muted-foreground" />
+                  <span className="text-muted-foreground">
+                    {new Intl.DateTimeFormat("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
-                    })}
+                    }).format(new Date(user.createdAt))}
                   </span>
                 </div>
               </TableCell>
 
               {/* Actions */}
-              <TableCell className="px-4 py-2">
-                <UserProvider>
-                  <UserButtonAction selectedUser={user} />
-                </UserProvider>
+              <TableCell className="px-2 py-1">
+                <UserButtonAction selectedUser={user} />
               </TableCell>
             </TableRow>
           ))}
@@ -153,10 +182,10 @@ const DataTable = ({ users }: {
       </Table>
 
       {users.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-muted-foreground">No users found</div>
-          <Button variant="outline" className="mt-2">
-            <Upload className="h-4 w-4 mr-2" />
+        <div className="text-center py-8">
+          <div className="text-muted-foreground text-sm">No users found</div>
+          <Button variant="outline" size="sm" className="mt-2">
+            <Upload className="h-3 w-3 mr-1" />
             Import Users
           </Button>
         </div>
@@ -164,15 +193,15 @@ const DataTable = ({ users }: {
 
       {/* Pagination */}
       {users.length > 0 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t">
-          <div className="text-sm text-muted-foreground">
-            Showing 1 to {users.length} of {users.length} results
+        <div className="flex items-center justify-between px-2 py-2 border-t">
+          <div className="text-xs text-muted-foreground">
+            Showing {renderUser.length} of {users.length} results
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled>
+          <div className="flex gap-1">
+            <Button variant="outline" size="sm" className="h-7 text-xs" disabled>
               Previous
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="h-7 text-xs">
               Next
             </Button>
           </div>
@@ -181,6 +210,6 @@ const DataTable = ({ users }: {
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
   );
-};
+});
 
-export default DataTable;
+export default React.memo(DataTable);

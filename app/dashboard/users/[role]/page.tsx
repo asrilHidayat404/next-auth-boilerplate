@@ -23,6 +23,9 @@ import UserButtonAction from "@/components/User/UserButtonAction";
 import { UserProvider } from "@/context/UserContext";
 import { Input } from "@/components/ui/input";
 import DataTable from "@/components/User/DataTable";
+import ExportUserButton from "@/components/User/ExportUserButton";
+import { ImportUserButton } from "@/components/User/ImportUserForm";
+import { CreateUserForm } from "@/components/User/CreateUserForm";
 
 const Page = async ({ params }: { params: { role: string } }) => {
   const { role } = await params;
@@ -77,28 +80,11 @@ const Page = async ({ params }: { params: { role: string } }) => {
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <Download className="h-4 w-4" />
-                  Export
-                </Button>
+                <ExportUserButton query={role} />
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <Upload className="h-4 w-4" />
-                  Import
-                </Button>
+                <ImportUserButton />
 
-                <Button size="sm" className="flex items-center gap-2">
-                  <PlusCircleIcon className="h-4 w-4" />
-                  Create User
-                </Button>
+                <CreateUserForm />
               </div>
             </div>
           </div>
