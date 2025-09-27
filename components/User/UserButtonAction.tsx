@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, User2Icon } from "lucide-react";
 
 import EditForm from "./EditForm";
-import DeleteUser from "./DeleteUser";
 import DeleteUserForm from "./DeleteUser";
 import { useUser } from "@/context/UserContext";
 import { User } from "@/types";

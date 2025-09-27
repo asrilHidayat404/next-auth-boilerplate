@@ -1,36 +1,45 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CreateUserForm } from "@/components/User/CreateUserForm";
 import DataTable from "@/components/User/DataTable";
 import ExportUserButton from "@/components/User/ExportUserButton";
 import { ImportUserButton } from "@/components/User/ImportUserForm";
-import SearchUserForm from "@/components/User/SearchUserForm";
+import SearchForm from "@/components/User/SearchUserForm";
+import { buildSearchWhere } from "@/helpers/buildSearchWhere";
+import { parseSearchParams } from "@/helpers/parseSearchParams";
 import db from "@/lib/db";
-import { Search, Download, Upload, PlusCircleIcon } from "lucide-react";
+import { paginate } from "@/lib/paginate";
+import { UserWithRole } from "@/types";
 import { Suspense } from "react";
 
-const Page = async () => {
-  const users = await db.user.findMany({
-    include: {
-      role: true,
+interface PageProps {
+  searchParams: {
+    page?: string;
+    search?: string;
+  };
+}
+
+const Page = async ({ searchParams }: PageProps) => {
+  const { currentPage, searchQuery } = parseSearchParams(searchParams);
+
+  const whereClause = buildSearchWhere(
+    {}, // ✅ lebih aman daripada null
+    searchQuery,
+    ["full_name", "email"]
+  );
+
+  const { data: users, pagination } = await paginate({
+    model: db.user,
+    args: {
+      where: whereClause,
+      include: { role: { select: { role_name: true } } }, // Ensure role is included
+      orderBy: { role: { role_name: "asc" } },
     },
-    orderBy: {
-      role: {
-        role_name: "asc", // 'admin' akan datang sebelum 'user'
-      },
-    },
-    // take: 10
+    page: currentPage,
+    perPage: 10,
   });
 
-  console.log("Page render");
-  
+
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6">
@@ -42,16 +51,13 @@ const Page = async () => {
 
       <Card>
         <CardHeader>
-          {/* Search and Filter Bar */}
           <div className="flex flex-col sm:flex-row gap-3">
-            <SearchUserForm />
+            <SearchForm initialSearch={searchQuery} />
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                 <ExportUserButton />
-
                 <ImportUserButton />
-
                 <CreateUserForm />
               </div>
             </div>
@@ -60,7 +66,12 @@ const Page = async () => {
 
         <CardContent className="p-0">
           <Suspense fallback={<TableLoading />}>
-            <DataTable users={users} />
+            <DataTable
+              users={users}
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              totalUsers={pagination.total}
+            />
           </Suspense>
         </CardContent>
       </Card>
@@ -68,9 +79,8 @@ const Page = async () => {
   );
 };
 
-// Basic loading fallback
 const TableLoading = () => (
-  <div className="space-y-2 p-4"> 
+  <div className="space-y-2 p-4">
     <Skeleton className="h-8 w-full" />
     <Skeleton className="h-12 w-full" />
     <Skeleton className="h-12 w-full" />

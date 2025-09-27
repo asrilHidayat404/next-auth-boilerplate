@@ -6,6 +6,7 @@ import { signUpSchema } from "@/schemas/SignUpSchema";
 import db from "@/lib/db";
 import { createUserSchema } from "@/schemas/CreateUserSchema";
 import { error } from "console";
+import { revalidatePath } from "next/cache";
 
 const signUp = async (formData: FormData) => {
   const fullName = formData.get("fullName");
@@ -153,6 +154,8 @@ const CreateUserAction = async (formData: FormData) => {
         where: { id: createdUser.id },
         data: { avatar: avatarPath },
       });
+
+      revalidatePath("/dashboard/users")
 
       return updatedUser;
     });
