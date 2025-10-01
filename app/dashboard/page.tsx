@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import db from "@/lib/db";
-import { LogIn, LogOut, UserPlus, Plus, Edit, Trash2, Activity } from "lucide-react";
+import { LogIn, LogOut, UserPlus, Plus, Edit, Trash2, Activity, Lock } from "lucide-react";
 
 
 // Komponen PieChart yang dinamis
@@ -98,6 +98,7 @@ const RecentActivity = ({ activities }: { activities: any[] }) => {
       case 'Login': return <LogIn className={iconClass} />;
       case 'Logout': return <LogOut className={iconClass} />;
       case 'Register': return <UserPlus className={iconClass} />;
+      case 'Reset Password': return <Lock className={iconClass} />;
       case 'Create': return <Plus className={iconClass} />;
       case 'Update': return <Edit className={iconClass} />;
       case 'Delete': return <Trash2 className={iconClass} />;

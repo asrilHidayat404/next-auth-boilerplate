@@ -33,6 +33,7 @@ export default function TypeFilter() {
         <SelectItem value="Delete">Delete</SelectItem>
         <SelectItem value="Login">Login</SelectItem>
         <SelectItem value="Logout">Logout</SelectItem>
+        <SelectItem value="Reset Password">Reset</SelectItem>
       </SelectContent>
     </Select>
   );

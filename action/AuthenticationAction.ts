@@ -5,7 +5,6 @@ import { promises as fs } from "fs";
 import { signUpSchema } from "@/schemas/SignUpSchema";
 import db from "@/lib/db";
 import { createUserSchema } from "@/schemas/CreateUserSchema";
-import { error } from "console";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 

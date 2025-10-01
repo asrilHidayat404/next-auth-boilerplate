@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { ArrowLeftCircle, ArrowRightCircle, LoaderIcon } from "lucide-react";
+import { ArrowLeftCircle, ArrowRightCircle, LoaderIcon, Lock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -85,19 +85,30 @@ export function LoginForm({
                   </p>
                 )}
               </div>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="showPassword"
-                  type="checkbox"
-                  checked={showPassword}
-                  onChange={(e) => {
-                    setShowPassword((prev) => !prev);
-                  }}
-                  className="h-4 w-4 cursor-pointer"
-                />
-                <Label htmlFor="showPassword" className="text-sm">
-                  Show Password
-                </Label>
+              <div className="flex justify-between">
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="showPassword"
+                    type="checkbox"
+                    checked={showPassword}
+                    onChange={(e) => {
+                      setShowPassword((prev) => !prev);
+                    }}
+                    className="h-4 w-4 cursor-pointer"
+                  />
+                  <Label htmlFor="showPassword" className="text-sm">
+                    Show Password
+                  </Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm flex items-center gap-2 hover:underline"
+                  >
+                    <Lock className="w-4 h-4" />
+                    Forgot Password
+                  </Link>
+                </div>
               </div>
               <Button
                 type="submit"
