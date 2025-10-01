@@ -131,3 +131,48 @@
 .font-lequire {
   font-family: "LequireDEMO", sans-serif;
 }
+
+
+@keyframes shineMove {
+  0% {
+      background-position:
+          -100% 0,
+          0 0;
+  }
+  100% {
+      background-position:
+          200% 0,
+          0 0;
+  }
+}
+
+.bounce {
+  display: inline-block;
+  animation: infiniteBounce 3s infinite both ease-in-out;
+}
+
+@keyframes infiniteBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+
+.scaling {
+  display: inline-block;
+  animation: infiniteScaling 3s infinite both ease-in-out;
+}
+
+@keyframes infiniteScaling {
+  0%, 100% {
+    transform: scale(0.97);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+
+

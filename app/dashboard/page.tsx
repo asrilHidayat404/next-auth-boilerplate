@@ -9,9 +9,17 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import db from "@/lib/db";
+import { LogIn, LogOut, UserPlus, Plus, Edit, Trash2, Activity } from "lucide-react";
 
-// Komponen PieChart yang lebih compact
-const PieChart = () => {
+
+// Komponen PieChart yang dinamis
+const PieChart = ({ active, newUsers, returning }: { active: number; newUsers: number; returning: number }) => {
+  const total = active + newUsers + returning;
+  const activePercentage = total > 0 ? (active / total) * 100 : 0;
+  const newUsersPercentage = total > 0 ? (newUsers / total) * 100 : 0;
+  const returningPercentage = total > 0 ? (returning / total) * 100 : 0;
+
   return (
     <div className="relative w-24 h-24 mx-auto">
       <div className="absolute inset-0 rounded-full border-6 border-primary"></div>
@@ -25,7 +33,7 @@ const PieChart = () => {
       ></div>
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <span className="text-sm font-bold">1.2k</span>
+          <span className="text-sm font-bold">{total}</span>
           <span className="text-xs block text-muted-foreground">Users</span>
         </div>
       </div>
@@ -40,18 +48,28 @@ const StatCard = ({
   change,
   icon,
   color,
+  period,
 }: {
   title: string;
   value: string;
   change: string;
   icon: React.ReactNode;
   color: string;
+  period?: "day" | "week" | "month";
 }) => {
   const isPositive = change.startsWith("+");
 
+  // mapping teks pembanding
+  const compareText =
+    period === "day"
+      ? "dari kemarin"
+      : period === "week"
+      ? "dari minggu lalu"
+      : "dari bulan lalu";
+
   return (
     <Card className={`border-l-4 ${color}`}>
-      <CardContent className="">
+      <CardContent>
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
@@ -61,7 +79,7 @@ const StatCard = ({
                 isPositive ? "text-green-600" : "text-red-600"
               }`}
             >
-              {change} dari bulan lalu
+              {change} {compareText}
             </p>
           </div>
           <div className="p-2 bg-muted rounded-lg">{icon}</div>
@@ -71,93 +89,69 @@ const StatCard = ({
   );
 };
 
-// Komponen Recent Activity yang compact
-const RecentActivity = () => {
-  const activities = [
-    {
-      id: 1,
-      user: "John Doe",
-      action: "membuat project baru",
-      time: "5m",
-      color: "bg-blue-500",
-    },
-    {
-      id: 2,
-      user: "Sarah Smith",
-      action: "mengupdate profil",
-      time: "1h",
-      color: "bg-green-500",
-    },
-    {
-      id: 3,
-      user: "Mike Johnson",
-      action: "menyelesaikan tugas",
-      time: "2h",
-      color: "bg-purple-500",
-    },
-    {
-      id: 4,
-      user: "Lisa Brown",
-      action: "mengupload file",
-      time: "3h",
-      color: "bg-yellow-500",
-    },
-  ];
+
+const RecentActivity = ({ activities }: { activities: any[] }) => {
+  const getActivityIcon = (type: string) => {
+    const iconClass = "h-3.5 w-3.5";
+    
+    switch (type) {
+      case 'Login': return <LogIn className={iconClass} />;
+      case 'Logout': return <LogOut className={iconClass} />;
+      case 'Register': return <UserPlus className={iconClass} />;
+      case 'Create': return <Plus className={iconClass} />;
+      case 'Update': return <Edit className={iconClass} />;
+      case 'Delete': return <Trash2 className={iconClass} />;
+      default: return <Activity className={iconClass} />;
+    }
+  };
+
+  const formatTimeAgo = (timestamp: Date) => {
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - timestamp.getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return 'now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h`;
+    return `${Math.floor(diffInMinutes / 1440)}d`;
+  };
 
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Aktivitas Terbaru</CardTitle>
+        <CardTitle className="text-base">Aktivitas Terbaru</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {activities.map((activity) => (
-          <div key={activity.id} className="flex items-center space-x-3">
-            <div className={`w-2 h-2 rounded-full ${activity.color}`}></div>
-            <div className="flex-1 text-sm">
-              <span className="font-medium">{activity.user}</span>{" "}
-              {activity.action}
+      <CardContent className="space-y-2">
+        {activities.length > 0 ? (
+          activities.map((activity) => (
+            <div key={activity.id} className="flex items-center justify-between py-1">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <div className="text-muted-foreground">
+                  {getActivityIcon(activity.type)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">
+                    {activity.user?.full_name || 'User'}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {activity.type} • {activity.effected}
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground shrink-0 ml-2">
+                {formatTimeAgo(new Date(activity.timestamp))}
+              </span>
             </div>
-            <Badge variant="secondary" className="text-xs">
-              {activity.time}
-            </Badge>
+          ))
+        ) : (
+          <div className="text-center text-muted-foreground py-3 text-sm">
+            Tidak ada aktivitas
           </div>
-        ))}
+        )}
       </CardContent>
     </Card>
   );
 };
 
-// Komponen Quick Actions yang compact
-const QuickActions = () => {
-  const actions = [
-    { icon: "📊", label: "Statistik", color: "hover:bg-blue-50" },
-    { icon: "👥", label: "User", color: "hover:bg-green-50" },
-    { icon: "⚙️", label: "Settings", color: "hover:bg-purple-50" },
-    { icon: "📋", label: "Laporan", color: "hover:bg-yellow-50" },
-  ];
-
-  return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Aksi Cepat</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-2">
-          {actions.map((action, index) => (
-            <Button
-              key={index}
-              variant="outline"
-              className={`h-16 flex flex-col gap-1 ${action.color}`}
-            >
-              <span className="text-lg">{action.icon}</span>
-              <span className="text-xs font-medium">{action.label}</span>
-            </Button>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
 
 // Komponen Progress Bar
 const ProgressBar = ({
@@ -177,31 +171,213 @@ const ProgressBar = ({
   );
 };
 
+async function getActivityStats(period: "day" | "week" | "month") {
+  const now = new Date();
+  let startOfCurrent: Date;
+  let endOfCurrent: Date;
+  let startOfPrevious: Date;
+  let endOfPrevious: Date;
+
+  if (period === "day") {
+    // Hari ini
+    startOfCurrent = new Date(now);
+    startOfCurrent.setHours(0, 0, 0, 0);
+    endOfCurrent = new Date(now);
+    endOfCurrent.setHours(23, 59, 59, 999);
+
+    // Kemarin
+    startOfPrevious = new Date(startOfCurrent);
+    startOfPrevious.setDate(startOfPrevious.getDate() - 1);
+    endOfPrevious = new Date(endOfCurrent);
+    endOfPrevious.setDate(endOfPrevious.getDate() - 1);
+
+  } else if (period === "week") {
+    // Minggu ini
+    const day = now.getDay();
+    const diffToMonday = day === 0 ? -6 : 1 - day; // Senin sebagai awal minggu
+    
+    startOfCurrent = new Date(now);
+    startOfCurrent.setDate(now.getDate() + diffToMonday);
+    startOfCurrent.setHours(0, 0, 0, 0);
+
+    endOfCurrent = new Date(startOfCurrent);
+    endOfCurrent.setDate(endOfCurrent.getDate() + 6);
+    endOfCurrent.setHours(23, 59, 59, 999);
+
+    // Minggu lalu
+    startOfPrevious = new Date(startOfCurrent);
+    startOfPrevious.setDate(startOfPrevious.getDate() - 7);
+    endOfPrevious = new Date(endOfCurrent);
+    endOfPrevious.setDate(endOfPrevious.getDate() - 7);
+
+  } else {
+    // period === "month"
+    // Bulan ini
+    startOfCurrent = new Date(now.getFullYear(), now.getMonth(), 1);
+    endOfCurrent = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    // Bulan lalu
+    startOfPrevious = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    endOfPrevious = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+  }
+
+  // Query database dengan model ActivityLog
+  const currentCount = await db.activityLog.count({
+    where: { timestamp: { gte: startOfCurrent, lte: endOfCurrent } },
+  });
+
+  const previousCount = await db.activityLog.count({
+    where: { timestamp: { gte: startOfPrevious, lte: endOfPrevious } },
+  });
+
+  // Hitung persentase perubahan
+  let change: string;
+  if (previousCount === 0) {
+    change = currentCount > 0 ? "+100%" : "0%";
+  } else {
+    const percent = ((currentCount - previousCount) / previousCount) * 100;
+    change = (percent >= 0 ? "+" : "") + percent.toFixed(1) + "%";
+  }
+
+  return { currentCount, change };
+}
+
+// Fungsi untuk mendapatkan distribusi pengguna berdasarkan model User
+async function getUserDistribution() {
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  // Total pengguna
+  const totalUsers = await db.user.count();
+
+  // Pengguna aktif (login dalam 7 hari terakhir) - menggunakan sessions
+  const activeUsers = await db.user.count({
+    where: {
+      sessions: {
+        some: {
+          expires: {
+            gte: now
+          }
+        }
+      }
+    }
+  });
+
+  // Pengguna baru (dibuat dalam 30 hari terakhir)
+  const newUsers = await db.user.count({
+    where: {
+      createdAt: {
+        gte: thirtyDaysAgo
+      }
+    }
+  });
+
+  // Pengguna returning (pernah login sebelumnya dan masih aktif)
+  const returningUsers = await db.user.count({
+    where: {
+      sessions: {
+        some: {
+          expires: {
+            gte: now
+          }
+        }
+      },
+      createdAt: {
+        lt: thirtyDaysAgo
+      }
+    }
+  });
+
+  return {
+    total: totalUsers,
+    active: activeUsers,
+    new: newUsers,
+    returning: returningUsers
+  };
+}
+
+// Fungsi untuk mendapatkan aktivitas terbaru dari ActivityLog
+async function getRecentActivities() {
+  const activities = await db.activityLog.findMany({
+    take: 5,
+    orderBy: {
+      timestamp: 'desc'
+    },
+    include: {
+      user: {
+        select: {
+          full_name: true,
+          email: true
+        }
+      }
+    }
+  });
+
+  return activities;
+}
+
+// Fungsi untuk mendapatkan statistik user changes
+async function getUserChanges() {
+  const yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
+  
+  const yesterdayUsers = await db.user.count({
+    where: {
+      createdAt: {
+        lt: yesterday
+      }
+    }
+  });
+
+  const totalUsers = await db.user.count();
+  
+  // Hitung perubahan
+  const change = totalUsers - yesterdayUsers;
+  
+  return {
+    total: totalUsers,
+    change: change > 0 ? `+${change}` : change === 0 ? "0" : `${change}`
+  };
+}
+
 const DashboardPage = async () => {
   const session = await auth();
   const userName = session?.user?.fullName || "Pengguna";
+  
+  // Data aktivitas
+  const { currentCount: dailyCount, change: dailyChange } = await getActivityStats("day");
+  const { currentCount: weeklyCount, change: weeklyChange } = await getActivityStats("week");
+  const { currentCount: monthlyCount, change: monthlyChange } = await getActivityStats("month");
+
+  // Data pengguna
+  const userStats = await getUserChanges();
+  
+  // Data distribusi pengguna
+  const userDistribution = await getUserDistribution();
+  
+  // Data aktivitas terbaru
+  const recentActivities = await getRecentActivities();
 
   const now = new Date();
   const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
   const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "Mei",
-    "Jun",
-    "Jul",
-    "Agu",
-    "Sep",
-    "Okt",
-    "Nov",
-    "Des",
+    "Jan", "Feb", "Mar", "Apr", "Mei", "Jun", 
+    "Jul", "Agu", "Sep", "Okt", "Nov", "Des",
   ];
 
   const currentDay = days[now.getDay()];
-  const currentDate = `${now.getDate()} ${
-    months[now.getMonth()]
-  } ${now.getFullYear()}`;
+  const currentDate = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+  // Hitung persentase distribusi
+  const activePercentage = userDistribution.total > 0 
+    ? (userDistribution.active / userDistribution.total) * 100 
+    : 0;
+  const newUsersPercentage = userDistribution.total > 0 
+    ? (userDistribution.new / userDistribution.total) * 100 
+    : 0;
+  const returningPercentage = userDistribution.total > 0 
+    ? (userDistribution.returning / userDistribution.total) * 100 
+    : 0;
 
   return (
     <main className="min-h-screen p-4 bg-background">
@@ -224,9 +400,10 @@ const DashboardPage = async () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Total Pengguna"
-            value="1,248"
-            change="+12.5%"
+            value={userStats.total.toString()}
+            change={userStats.change}
             color="border-l-primary"
+            period="day"
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -246,9 +423,10 @@ const DashboardPage = async () => {
           />
           <StatCard
             title="Aktivitas Hari Ini"
-            value="342"
-            change="+8.2%"
+            value={dailyCount.toString()}
+            change={dailyChange}
             color="border-l-green-500"
+            period="day"
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -267,10 +445,11 @@ const DashboardPage = async () => {
             }
           />
           <StatCard
-            title="Pertumbuhan"
-            value="24.3%"
-            change="+3.1%"
+            title="Aktivitas Minggu Ini"
+            value={weeklyCount.toString()}
+            change={weeklyChange}
             color="border-l-purple-500"
+            period="week"
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -289,10 +468,11 @@ const DashboardPage = async () => {
             }
           />
           <StatCard
-            title="Kepuasan"
-            value="94%"
-            change="+2.4%"
+            title="Aktivitas Bulan Ini"
+            value={monthlyCount.toString()}
+            change={monthlyChange}
             color="border-l-yellow-500"
+            period="month"
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -314,7 +494,7 @@ const DashboardPage = async () => {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Pie Chart Section */}
+          {/* Pie Chart Section - NOW DYNAMIC */}
           <Card className="lg:col-span-1">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg text-center">
@@ -322,27 +502,37 @@ const DashboardPage = async () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <PieChart />
+              <PieChart 
+                active={userDistribution.active}
+                newUsers={userDistribution.new}
+                returning={userDistribution.returning}
+              />
               <div className="space-y-3">
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span className="flex items-center">
                       <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
-                      Aktif
+                      Aktif (7 hari)
                     </span>
-                    <span className="font-medium">42%</span>
+                    <span className="font-medium">{activePercentage.toFixed(0)}%</span>
                   </div>
-                  <ProgressBar percentage={42} color="bg-primary" />
+                  <ProgressBar percentage={activePercentage} color="bg-primary" />
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {userDistribution.active} pengguna
+                  </div>
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span className="flex items-center">
                       <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                      Baru
+                      Baru (30 hari)
                     </span>
-                    <span className="font-medium">33%</span>
+                    <span className="font-medium">{newUsersPercentage.toFixed(0)}%</span>
                   </div>
-                  <ProgressBar percentage={33} color="bg-green-500" />
+                  <ProgressBar percentage={newUsersPercentage} color="bg-green-500" />
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {userDistribution.new} pengguna
+                  </div>
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
@@ -350,9 +540,12 @@ const DashboardPage = async () => {
                       <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
                       Returning
                     </span>
-                    <span className="font-medium">25%</span>
+                    <span className="font-medium">{returningPercentage.toFixed(0)}%</span>
                   </div>
-                  <ProgressBar percentage={25} color="bg-purple-500" />
+                  <ProgressBar percentage={returningPercentage} color="bg-purple-500" />
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {userDistribution.returning} pengguna
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -361,38 +554,15 @@ const DashboardPage = async () => {
           <Card className="lg:col-span-1">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg text-center">
-                Distribusi Pengguna
+                Aktivitas Terbaru
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <RecentActivity />
+              <RecentActivity activities={recentActivities} />
             </CardContent>
           </Card>
         </div>
 
-        {/* Bottom Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <QuickActions />
-
-          <Card className="bg-gradient-to-br from-primary to-primary/80">
-            <CardContent className="p-4 text-primary-foreground">
-              <div className="space-y-3">
-                <h3 className="font-bold text-lg">Tips Produktivitas</h3>
-                <p className="text-sm">
-                  Gunakan fitur reminder untuk mengatur jadwal harian Anda dan
-                  tingkatkan produktivitas hingga 40%.
-                </p>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="bg-background text-foreground hover:bg-background/90"
-                >
-                  Pelajari Lebih Lanjut
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </main>
   );

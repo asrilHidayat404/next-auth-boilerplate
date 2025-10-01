@@ -21,6 +21,8 @@ import { data } from "@/lib/routes"
 import ThemeButton from "../ThemeButton"
 import { useSession } from "next-auth/react"
 import { ScrollArea } from "../ui/scroll-area"
+import Link from "next/link"
+import { ActivitySquare } from "lucide-react"
 
 
 
@@ -42,6 +44,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             <SidebarMenuItem>
                                 <SidebarMenuButton asChild>
                                     <ThemeButton />
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroup>
+                     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+                        <SidebarGroupLabel>Log</SidebarGroupLabel>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild>
+                                   
+                                    <Link href="/dashboard/log-activity"><ActivitySquare /> Log Activity</Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         </SidebarMenu>

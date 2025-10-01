@@ -27,6 +27,11 @@ import { Button } from "../ui/button";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { UserWithRole } from "@/types";
 import { Pagination } from "@/lib/Pagination";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
 
 const getInitials = (name: string | null) => {
   if (!name) return "U";
@@ -59,7 +64,7 @@ const DataTable = React.memo(
 
     return (
       <ScrollArea className="w-full">
-        <Table className="text-xs">
+        <Table className="">
           <TableHeader>
             <TableRow>
               {headers.map((header) => (
@@ -113,7 +118,7 @@ const DataTable = React.memo(
                         ? "destructive"
                         : "secondary"
                     }
-                    className="text-[10px] px-1 py-0 h-4"
+                    className="text-xs px-2 py-0 h-5 min-w-[60px] justify-center"
                   >
                     {user.role?.role_name || "No Role"}
                   </Badge>
@@ -123,7 +128,7 @@ const DataTable = React.memo(
                 <TableCell className="px-2 py-1">
                   <Badge
                     variant="secondary"
-                    className="text-[10px] px-1 py-0 h-4"
+                    className="text-xs px-2 py-0 h-5 min-w-[60px] justify-center"
                   >
                     Laki-laki
                   </Badge>
@@ -131,14 +136,24 @@ const DataTable = React.memo(
 
                 {/* Address */}
                 <TableCell className="px-2 py-1">
-                  <div className="max-w-[120px]">
-                    <span className="line-clamp-2 leading-tight text-wrap">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      At, ea.
-                    </span>
-                  </div>
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <div className="max-w-[120px] cursor-pointer">
+                        <span className="line-clamp-2 leading-tight text-wrap text-xs text-muted-foreground">
+                          {user.full_name || "No address provided"}
+                        </span>
+                      </div>
+                    </HoverCardTrigger>
+                    <HoverCardContent className="w-80 max-w-[90vw]">
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-semibold">Address</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {user.full_name || "No address provided"}
+                        </p>
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
                 </TableCell>
-
                 {/* Created At */}
                 <TableCell className="px-2 py-1">
                   <div className="flex items-center gap-1">

@@ -17,24 +17,49 @@ model Role {
 }
 
 model User {
-  id            String          @id @default(cuid())
-  full_name     String?
-  email         String?         @unique
-  password      String?
-  emailVerified DateTime?
-  avatar        String?
-  accounts      Account[]
-  sessions      Session[]
-  Authenticator Authenticator[]
-  posts         Post[]
-  role_id       Int
+  id             String          @id @default(cuid())
+  full_name      String?
+  email          String?         @unique
+  password       String?
+  emailVerified  DateTime?
+  avatar         String?
+  accounts       Account[]
+  sessions       Session[]
+  Authenticator  Authenticator[]
+  posts          Post[]
+  role_id        Int
 
-  role Role @relation(fields: [role_id], references: [id], onUpdate: Cascade)
+  role        Role        @relation(fields: [role_id], references: [id], onUpdate: Cascade)
+  activityLog ActivityLog []
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+// Tambahkan field baru ke model ActivityLog
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  
+  // Field baru sesuai kebutuhan
+  event     String   // Jenis event/aksi
+  type      String   // Tipe aktivitas (Create, Update, Delete, etc.)
+  effected  String   // Data/record yang terkena efek
+  details   Json?    // Simpan perubahan detail dalam JSON
+  
+  // Metadata
+  ipAddress String?
+  userAgent String?
+  timestamp DateTime @default(now()) // Ganti createdAt jadi timestamp
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([timestamp])
+  @@index([type])
+  @@index([event])
+}
 model Post {
   id      String @id @default(cuid())
   title   String

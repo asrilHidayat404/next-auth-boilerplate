@@ -28,7 +28,6 @@ export function LoginForm({
   });
   const router = useRouter();
   const handleSignIn = async (data: SignInSchemaValues) => {
-
     const res = await signIn("credentials", {
       redirect: false,
       email: data.email,
@@ -105,7 +104,9 @@ export function LoginForm({
                 disabled={isSubmitting}
                 className="w-full flex items-center justify-center gap-2 cursor-pointer"
               >
-                {isSubmitting && <LoaderIcon className="animate-spin h-5 w-5" />}
+                {isSubmitting && (
+                  <LoaderIcon className="animate-spin h-5 w-5" />
+                )}
                 <span>{isSubmitting ? "Authenticating..." : "Login"}</span>
               </Button>
 
@@ -135,12 +136,22 @@ export function LoginForm({
               </Link>
             </footer>
           </form>
-          <div className="relative hidden md:block">
+          <div
+            className="relative hidden md:block"
+            style={{
+              backgroundImage:
+                "linear-gradient(45deg, transparent 25%, rgba(68,68,68,.2) 50%, transparent 75%, transparent 100%)",
+              backgroundSize: "250% 250%, 100% 100%",
+              backgroundRepeat: "no-repeat",
+              animation: "shineMove 2s linear infinite",
+              backgroundPosition: "-100% 0, 0 0",
+            }}
+          >
             <Image
               src="/illustrations/login-bg.png"
               alt="Login Background"
               fill
-              className="object-contain dark:brightness-[0.7] dark:grayscale"
+              className="object-contain dark:brightness-[0.7] dark:grayscale scaling"
             />
           </div>
         </CardContent>

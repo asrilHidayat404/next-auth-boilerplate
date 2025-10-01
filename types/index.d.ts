@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client";
+
 export interface Role {
   id: number;
   role_name: string;
@@ -18,7 +20,6 @@ export interface User {
   updatedAt: string | number | Date;
 }
 
-
 // role bisa null
 export type UserWithRole = Prisma.UserGetPayload<{
   include: {
@@ -26,4 +27,21 @@ export type UserWithRole = Prisma.UserGetPayload<{
       select: { role_name: true };
     };
   };
-}> & { role: { role_name: string } | null };
+}> & {
+  role: {
+    id: number;
+    role_name: string;
+    createdAt: string | number | Date;
+    updatedAt: string | number | Date;
+  } | null;
+};
+
+export type ActivityLogWithUser = Prisma.ActivityLogGetPayload<{
+  include: {
+    user: {
+      include: {
+        role: true;
+      };
+    };
+  };
+}>;

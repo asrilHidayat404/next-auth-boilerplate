@@ -21,6 +21,8 @@ interface PageProps {
 
 const Page = async ({ searchParams }: PageProps) => {
   const { currentPage, searchQuery } = parseSearchParams(searchParams);
+  
+  
 
   const whereClause = buildSearchWhere(
     {}, // ✅ lebih aman daripada null
@@ -49,7 +51,7 @@ const Page = async ({ searchParams }: PageProps) => {
         </p>
       </div>
 
-      <Card>
+      <Card className="bg-accent">
         <CardHeader>
           <div className="flex flex-col sm:flex-row gap-3">
             <SearchForm initialSearch={searchQuery} />

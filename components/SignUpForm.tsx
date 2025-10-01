@@ -63,12 +63,22 @@ export function SignUpForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <div className="relative hidden md:block">
+          <div
+            className="relative hidden md:block"
+            style={{
+              backgroundImage:
+                "linear-gradient(45deg, transparent 25%, rgba(68,68,68,.2) 50%, transparent 75%, transparent 100%)",
+              backgroundSize: "250% 250%, 100% 100%",
+              backgroundRepeat: "no-repeat",
+              animation: "shineMove 2s linear infinite",
+              backgroundPosition: "-100% 0, 0 0",
+            }}
+          >
             <Image
               src="/illustrations/sign-up-bg.png"
               alt="Login Background"
               fill
-              className="object-contain dark:brightness-[0.7] dark:grayscale"
+              className="object-contain dark:brightness-[0.7] dark:grayscale bounce"
             />
           </div>
           <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>

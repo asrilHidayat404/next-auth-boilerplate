@@ -18,7 +18,7 @@ export function TeamSwitcher() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Link href={"/"} className="bg-accent-foreground flex aspect-square size-10 items-center justify-center rounded-lg p-1">
+              <Link href={"/"} className="dark:bg-accent-foreground bg-accent flex aspect-square size-10 items-center justify-center rounded-lg p-1">
                 <img src="/next.svg" alt="" />
               </Link>
               <div className="grid flex-1 text-left text-sm leading-tight">
