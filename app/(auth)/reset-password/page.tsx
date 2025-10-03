@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Lock } from "lucide-react";
 import { resetPasswordSchema } from "@/schemas/ResetPasswordSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ResetPassword } from "@/action/ResetPasswordAction";
 
 interface FormValues {
   password: string;
@@ -32,23 +33,22 @@ export default function ResetPasswordPage() {
       toast.error("Passwords do not match");
       return;
     }
+    const formData = new FormData();
+    formData.append("token", token);
+    formData.append("password", data.password);
+    formData.append("password_confirmation", data.password_confirmation);
 
     setLoading(true);
 
-    const res = await fetch("/api/auth/reset-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, password: data.password, password_confirmation: data.password_confirmation }),
-    });
+    const res = await ResetPassword(formData)
 
-    const result = await res.json();
     setLoading(false);
 
-    if (result.success) {
+    if (res?.success) {
       toast.success("Password reset successfully!");
       router.push("/sign-in");
     } else {
-      toast.error(result.error || "Failed to reset password");
+      toast.error("Failed to reset password");
     }
   };
 

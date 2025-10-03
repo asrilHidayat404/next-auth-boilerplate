@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeftCircle } from "lucide-react";
+import { ForgotPassword } from "@/action/ResetPasswordAction";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -27,17 +28,14 @@ export default function ForgotPasswordPage() {
 
   const onSubmit = async (data: ForgotPasswordValues) => {
     try {
-      const res = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: data.email }),
-      });
+      const formData = new FormData();
+      formData.append("email", data.email);
+      const res = await ForgotPassword(formData);
 
-      const json = await res.json();
-      if (json.success) {
+      if (res?.success) {
         toast.success("Check your email to reset your password!");
       } else {
-        toast.error(json.error || "Failed to send reset email");
+        toast.error("Failed to send reset email");
       }
     } catch (err) {
       toast.error("Server error occurred");
