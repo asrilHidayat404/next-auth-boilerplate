@@ -140,7 +140,7 @@ function DetailDialog({ log }: { log: any }) {
               {log.ipAddress && (
                 <div>
                   <label className="text-sm font-medium">IP Address</label>
-                  <p className="text-sm text-muted-foreground font-mono mt-0.5">
+                  <p className="text-sm text-muted-foreground font-mono mt-0.5 truncate" >
                     {log.ipAddress}
                   </p>
                 </div>
@@ -148,7 +148,7 @@ function DetailDialog({ log }: { log: any }) {
               {log.userAgent && (
                 <div>
                   <label className="text-sm font-medium">User Agent</label>
-                  <p className="text-sm text-muted-foreground mt-0.5 truncate">
+                  <p className="text-sm text-muted-foreground mt-0.5 truncate" title={log.userAgent}>
                     {log.userAgent}
                   </p>
                 </div>
